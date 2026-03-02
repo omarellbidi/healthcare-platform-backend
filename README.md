@@ -17,16 +17,7 @@ Healthcare Appointment Booking RESTful API. Originally developed as a Capstone P
 
 </div>
 
----
 
-## Live Demo
-
-| | URL |
-|---|---|
-| **Base API** | https://healthapp-backend-v2-186862202342.us-central1.run.app |
-| **Swagger UI** | https://healthapp-backend-v2-186862202342.us-central1.run.app/swagger-ui/index.html |
-
----
 
 ## Table of Contents
 
