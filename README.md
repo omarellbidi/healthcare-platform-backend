@@ -287,4 +287,4 @@ The API will be available at `http://localhost:8080` and Swagger UI at `http://l
 
 ## License
 
-Distributed under the MIT License. See  for more information.
+Distributed under the MIT License.
