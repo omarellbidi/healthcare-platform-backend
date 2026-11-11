@@ -11,6 +11,7 @@ Healthcare Appointment Booking RESTful API. Originally developed as a Capstone P
 ![SendGrid](https://img.shields.io/badge/SendGrid-Email-1A82E2?style=for-the-badge&logo=twilio&logoColor=white)
 ![GCP](https://img.shields.io/badge/GCP-Cloud_Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
+[![CI](https://github.com/omarellbidi/healthcare-platform-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/omarellbidi/healthcare-platform-backend/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-125_passing-brightgreen?style=flat-square)](#testing)
 [![Endpoints](https://img.shields.io/badge/endpoints-43-blue?style=flat-square)](API_REFERENCE.md)
 [![Tables](https://img.shields.io/badge/database-9_tables-orange?style=flat-square)](#database-schema)
