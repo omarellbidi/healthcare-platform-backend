@@ -25,6 +25,7 @@ public class UserDetailsImpl implements UserDetails {
     private String password; // bcrypt hashed password
     private Role role; // PATIENT, DOCTOR, or ADMIN
     private Boolean verified; // Controls isEnabled() - unverified users cannot login
+    private Boolean suspended; // Controls isAccountNonLocked() - suspended users cannot login
     private Collection<? extends GrantedAuthority> authorities; // Spring Security authorities
 
     /**
@@ -40,6 +41,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword(),
                 user.getRole(),
                 user.getVerified(),
+                Boolean.TRUE.equals(user.getSuspended()),
                 Collections.singletonList(authority)
         );
     }
@@ -66,7 +68,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !Boolean.TRUE.equals(suspended);
     }
 
     @Override

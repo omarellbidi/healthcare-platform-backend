@@ -46,6 +46,11 @@ public class AuthService {
             throw new UserAlreadyExistsException("Email already registered");
         }
 
+        // Only patients and doctors can register themselves, admin accounts are created separately
+        if (request.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException("Registration is only possible as patient or doctor");
+        }
+
         // Validate role-specific required fields
         if (request.getRole() == Role.PATIENT && request.getDob() == null) {
             throw new IllegalArgumentException("Date of birth is required for patients");
@@ -190,6 +195,11 @@ public class AuthService {
         // Enforce email verification requirement
         if (!user.getVerified()) {
             throw new EmailNotVerifiedException("Please verify your email before logging in");
+        }
+
+        // Suspended accounts cannot log in
+        if (Boolean.TRUE.equals(user.getSuspended())) {
+            throw new InvalidCredentialsException("This account has been suspended");
         }
 
         // Generate JWT token (24-hour expiration)

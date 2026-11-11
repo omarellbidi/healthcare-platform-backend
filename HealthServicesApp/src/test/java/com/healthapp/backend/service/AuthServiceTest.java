@@ -165,6 +165,16 @@ class AuthServiceTest {
     }
 
     @Test
+    void testRegister_AsAdmin_ThrowsException() {
+        // Arrange
+        patientRequest.setRole(Role.ADMIN);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(patientRequest));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
     void testRegister_DoctorWithoutLicense_ThrowsException() {
         // Arrange
         doctorRequest.setLicenseNumber(null);
@@ -257,6 +267,22 @@ class AuthServiceTest {
 
         // Act & Assert
         assertThrows(EmailNotVerifiedException.class, () -> authService.login(loginRequest));
+    }
+
+    @Test
+    void testLogin_SuspendedAccount_ThrowsException() {
+        // Arrange
+        testUser.setSuspended(true);
+        LoginRequest loginRequest = new LoginRequest("test@test.com", "Test1234");
+        Authentication authentication = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(testUser));
+
+        // Act & Assert
+        assertThrows(InvalidCredentialsException.class, () -> authService.login(loginRequest));
+        verify(tokenProvider, never()).generateToken(any(Authentication.class));
     }
 
     @Test

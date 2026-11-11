@@ -11,9 +11,9 @@ Healthcare Appointment Booking RESTful API. Originally developed as a Capstone P
 ![SendGrid](https://img.shields.io/badge/SendGrid-Email-1A82E2?style=for-the-badge&logo=twilio&logoColor=white)
 ![GCP](https://img.shields.io/badge/GCP-Cloud_Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
-[![Tests](https://img.shields.io/badge/tests-123_passing-brightgreen?style=flat-square)](#testing)
+[![Tests](https://img.shields.io/badge/tests-125_passing-brightgreen?style=flat-square)](#testing)
 [![Endpoints](https://img.shields.io/badge/endpoints-43-blue?style=flat-square)](API_REFERENCE.md)
-[![Tables](https://img.shields.io/badge/database-10_tables-orange?style=flat-square)](#database-schema)
+[![Tables](https://img.shields.io/badge/database-9_tables-orange?style=flat-square)](#database-schema)
 
 </div>
 
@@ -34,10 +34,10 @@ Healthcare Appointment Booking RESTful API. Originally developed as a Capstone P
 ## Key Features
 
 - **JWT Authentication & RBAC** — Three distinct roles (`Patient`, `Doctor`, `Admin`) with email verification and password reset via SendGrid
-- **Intelligent Scheduling** — Double-booking prevention at both application and database level, 24-hour cancellation policy, maximum one reschedule per appointment
+- **Intelligent Scheduling** — Double-booking check before every booking, 24-hour cancellation policy, maximum one reschedule per appointment
 - **Doctor Discovery** — Public multi-criteria search with filtering, sorting, and pagination
 - **Reviews & Ratings** — Denormalized average ratings for O(1) read performance on search results
-- **Admin Panel** — Dashboard statistics, user management (suspend/activate), doctor approval workflow, audit logging
+- **Admin Panel** — Dashboard statistics, user management (suspended users cannot log in), doctor approval workflow, audit logging
 - **Cloud Deployment** — Multi-stage Docker build, Google Cloud Run with auto-scaling, Cloud SQL managed PostgreSQL
 
 ---
@@ -74,7 +74,7 @@ HTTP Request
      |
   Repository Layer                   -- JPA repositories + custom @Query methods
      |
-  PostgreSQL Database                -- Constraints, indexes, JSONB support
+  PostgreSQL Database                -- Constraints, indexes, JSON columns
 ```
 
 **Project Structure:**
@@ -83,26 +83,24 @@ src/main/java/com/healthapp/backend/
 ├── config/          # Security, CORS, Swagger configuration
 ├── controller/      # 8 REST controllers (43 endpoints)
 ├── dto/             # Request/Response DTOs with validation
-├── entity/          # JPA entities (10 tables)
-├── enums/           # Role, AppointmentStatus, DayOfWeek
+├── entity/          # JPA entities (9 tables)
+├── enums/           # Role, AppointmentStatus
 ├── exception/       # Global exception handler
 ├── repository/      # Spring Data JPA repositories
 ├── security/        # JWT provider, auth filter, UserDetails
-├── service/         # Business logic services
-└── converter/       # JSONB and List type converters
+└── service/         # Business logic services
 ```
 
 ---
 
 ## Database Schema
 
-**10 tables** with foreign key relationships, indexes, and constraints:
+**9 tables** with foreign key relationships, indexes, and constraints:
 
 ```mermaid
 erDiagram
     User ||--o| Patient : "has profile"
     User ||--o| Doctor : "has profile"
-    User ||--o{ Notification : "receives"
     User ||--o{ AuditLog : "generates"
     Patient ||--o| MedicalHistory : "has"
     Patient ||--o{ Appointment : "books"
@@ -119,6 +117,7 @@ erDiagram
         VARCHAR password
         ENUM role "PATIENT | DOCTOR | ADMIN"
         BOOLEAN verified
+        BOOLEAN suspended
         TIMESTAMP created_at
     }
 
@@ -154,7 +153,7 @@ erDiagram
     MedicalHistory {
         UUID id PK
         UUID patient_id FK
-        JSONB questionnaire
+        JSON questionnaire
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
@@ -200,15 +199,6 @@ erDiagram
         TIMESTAMP created_at
     }
 
-    Notification {
-        UUID id PK
-        UUID user_id FK
-        ENUM type "EMAIL | SYSTEM"
-        TEXT message
-        BOOLEAN read
-        TIMESTAMP sent_at
-    }
-
     AuditLog {
         UUID id PK
         UUID user_id FK
@@ -233,28 +223,31 @@ The API exposes **43 endpoints** across 7 domains (Authentication, Profiles, Ava
 ## Testing
 
 ```
-Tests run: 123, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 125, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
-**123 automated tests** covering both unit and integration layers:
+**125 automated tests** covering both unit and integration layers:
 
 | Test Suite | Type | Tests |
 |-----------|------|:-----:|
-| AuthenticationServiceTest | Unit | 11 |
-| UserServiceTest | Unit | 11 |
-| ProfileServiceTest | Unit | 13 |
-| AvailabilityServiceTest | Unit | 9 |
-| AppointmentServiceTest | Unit | 5 |
+| AuthServiceTest | Unit | 18 |
 | ReviewServiceTest | Unit | 14 |
 | SearchServiceTest | Unit | 11 |
+| UserDetailsServiceImplTest | Unit | 9 |
+| JwtTokenProviderTest | Unit | 8 |
+| AvailabilityServiceTest | Unit | 6 |
+| AppointmentServiceTest | Unit | 5 |
+| PatientServiceTest | Unit | 4 |
 | AuthControllerTest | Integration | 14 |
-| AvailabilityControllerTest | Integration | 14 |
+| AdminControllerTest | Integration | 14 |
+| DoctorControllerTest | Integration | 12 |
+| ProfileControllerTest | Integration | 4 |
 | AppointmentControllerTest | Integration | 3 |
 | ReviewControllerTest | Integration | 2 |
-| DoctorControllerTest | Integration | 17 |
+| HealthServicesAppApplicationTests | Integration | 1 |
 
-**Business rules validated:** double-booking prevention, 24-hour cancellation policy, one review per appointment, author-only review modification, automatic rating recalculation, public vs. protected endpoint access, sorting-after-filtering correctness.
+**Business rules validated:** double-booking prevention, patients and doctors only for self-registration, no login for suspended accounts, 24-hour cancellation policy, one review per appointment, author-only review modification, automatic rating recalculation, public vs. protected endpoint access, sorting-after-filtering correctness.
 
 ---
 
@@ -266,8 +259,8 @@ For full local setup instructions (PostgreSQL, environment variables, Maven, Doc
 
 **Quick start with Docker Compose:**
 ```bash
-git clone https://github.com/<your-username>/HealthServicesApp.git
-cd HealthServicesApp
+git clone https://github.com/omarellbidi/healthcare-platform-backend.git
+cd healthcare-platform-backend/HealthServicesApp
 cp .env.example .env
 docker compose up
 ```

@@ -1,2 +1,6 @@
 .DS_Store
 **/.DS_Store
+
+# Local environment variables
+.env
+target/

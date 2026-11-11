@@ -86,6 +86,10 @@ SPRING_DATASOURCE_PASSWORD=your_local_password
 JWT_SECRET=your-random-jwt-secret-key-at-least-64-characters-long-for-hs512
 JWT_EXPIRATION=86400000
 
+# Initial admin account (no admin is created if these are not set)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=choose-a-strong-password
+
 # Email (create a free SendGrid account for testing)
 SENDGRID_API_KEY=your-sendgrid-api-key
 EMAIL_FROM=your-email@example.com
@@ -108,7 +112,7 @@ The app will start on port `8080`. Hibernate will automatically create all datab
 
 ## Running Tests
 
-The project includes **123 automated tests** (unit + integration). Tests use an in-memory **H2 database**, so no PostgreSQL setup is needed for testing.
+The project includes **125 automated tests** (unit + integration). Tests use an in-memory **H2 database**, so no PostgreSQL setup is needed for testing.
 
 ```bash
 # Run all tests
@@ -117,7 +121,7 @@ The project includes **123 automated tests** (unit + integration). Tests use an 
 
 Expected output:
 ```
-Tests run: 123, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 125, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -150,11 +154,10 @@ HealthServicesApp/
 │   │   │   ├── exception/       # Global error handling
 │   │   │   ├── repository/      # Data access layer
 │   │   │   ├── security/        # JWT + Spring Security
-│   │   │   ├── service/         # Business logic
-│   │   │   └── converter/       # Type converters
+│   │   │   └── service/         # Business logic
 │   │   └── resources/
 │   │       └── application.properties
-│   └── test/                    # 123 automated tests
+│   └── test/                    # 125 automated tests
 ├── Dockerfile                   # Multi-stage Docker build
 ├── docker-compose.yml           # Local dev with PostgreSQL
 ├── pom.xml                      # Maven dependencies

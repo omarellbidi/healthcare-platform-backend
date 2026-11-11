@@ -81,6 +81,7 @@ class AdminControllerTest {
                 "password",
                 Role.ADMIN,
                 true,
+                false,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
         );
 
@@ -91,6 +92,7 @@ class AdminControllerTest {
                 "password",
                 Role.PATIENT,
                 true,
+                false,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_PATIENT"))
         );
 
@@ -101,6 +103,7 @@ class AdminControllerTest {
                 "password",
                 Role.DOCTOR,
                 true,
+                false,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_DOCTOR"))
         );
 
